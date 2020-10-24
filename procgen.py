@@ -88,7 +88,7 @@ def generate_dungeon(
         engine: Engine,
 ) -> GameMap:
     """Generate a new dungeon map."""
-    player: engine.player
+    player = engine.player
     dungeon = GameMap(engine, map_width, map_height, entities=[player])
 
     rooms: List[RectangularRoom] = []
