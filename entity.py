@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import copy
-from typing import Optional, Type, Tuple, TypeVar, TYPE_CHECKING
+import math
+from typing import Optional, Type, Tuple, TypeVar, TYPE_CHECKING, Union
 
 from render_order import RenderOrder
 
@@ -20,7 +21,7 @@ class Entity:
     A generic object to represent players, enemies, items, etc.
     """
 
-    parent: GameMap
+    parent: Union[GameMap, Inventory]
 
     def __init__(
             self,
@@ -59,14 +60,21 @@ class Entity:
         return clone
 
     def place(self, x: int, y: int, gamemap: Optional[GameMap] = None) -> None:
-        """Place this entity at a new locaiton. Handles moving across GameMaps."""
+        """Place this entity at a new location. Handles moving across GameMaps."""
         self.x = x
         self.y = y
         if gamemap:
             if hasattr(self, "parent"):  # Possibly uninitialized.
-                self.gamemap.entities.remove(self)
+                if self.parent is self.gamemap:
+                    self.gamemap.entities.remove(self)
             self.parent = gamemap
             gamemap.entities.add(self)
+
+    def distance(self, x: int, y: int) -> float:
+        """
+        Return the distance between the current entity and the given (x, y) coordinate.
+        """
+        return math.sqrt((x - self.x) ** 2 + (y - self.y) ** 2)
 
     def move(self, dx: int, dy: int) -> None:
         # Move the entity by a given amount
